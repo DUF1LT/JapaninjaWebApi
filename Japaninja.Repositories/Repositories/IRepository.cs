@@ -1,6 +1,8 @@
-﻿namespace Japaninja.Repositories.Repositories;
+﻿using Japaninja.DomainModel.Models.Interfaces;
 
-public interface IRepository<T> where T : class
+namespace Japaninja.Repositories.Repositories;
+
+public interface IRepository<in T> where T : class, IHasId
 {
     void Add(T entity);
 

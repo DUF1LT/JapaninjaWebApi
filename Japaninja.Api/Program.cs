@@ -10,8 +10,18 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<JapaninjaDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<JapaninjaUser, JapaninjaRole>()
-    .AddSignInManager<SignInManager<JapaninjaUser>>()
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(b =>
+    {
+        b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders("*");
+    });
+});
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddSignInManager<SignInManager<IdentityUser>>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddUserManager<UserManager<IdentityUser>>()
     .AddEntityFrameworkStores<JapaninjaDbContext>()
     .AddDefaultTokenProviders();
 
