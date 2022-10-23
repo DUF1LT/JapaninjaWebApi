@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Japaninja.Repositories.Migrations
 {
     [DbContext(typeof(JapaninjaDbContext))]
-    [Migration("20221002144659_Initial")]
+    [Migration("20221003080524_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,28 @@ namespace Japaninja.Repositories.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("Japaninja.DomainModel.Models.CouriersOrders", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CourierId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("CourierId", "OrderId")
+                        .IsUnique()
+                        .HasFilter("[CourierId] IS NOT NULL AND [OrderId] IS NOT NULL");
+
+                    b.ToTable("CouriersOrders");
+                });
 
             modelBuilder.Entity("Japaninja.DomainModel.Models.CustomerAddress", b =>
                 {
@@ -122,7 +144,11 @@ namespace Japaninja.Repositories.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("CourierId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CustomerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DeliveryFactTime")
@@ -138,6 +164,8 @@ namespace Japaninja.Repositories.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
+
+                    b.HasIndex("CourierId");
 
                     b.HasIndex("CustomerId");
 
@@ -582,6 +610,21 @@ namespace Japaninja.Repositories.Migrations
                     b.HasDiscriminator().HasValue("ManagerUser");
                 });
 
+            modelBuilder.Entity("Japaninja.DomainModel.Models.CouriersOrders", b =>
+                {
+                    b.HasOne("Japaninja.DomainModel.Identity.CourierUser", "Courier")
+                        .WithMany("Orders")
+                        .HasForeignKey("CourierId");
+
+                    b.HasOne("Japaninja.DomainModel.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("Courier");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Japaninja.DomainModel.Models.CustomerAddress", b =>
                 {
                     b.HasOne("Japaninja.DomainModel.Identity.CustomerUser", "Customer")
@@ -612,9 +655,15 @@ namespace Japaninja.Repositories.Migrations
                         .WithMany()
                         .HasForeignKey("AddressId");
 
+                    b.HasOne("Japaninja.DomainModel.Identity.CourierUser", "Courier")
+                        .WithMany()
+                        .HasForeignKey("CourierId");
+
                     b.HasOne("Japaninja.DomainModel.Identity.CustomerUser", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Japaninja.Repositories.JapaninjaDbContext+OrderStatuses", null)
                         .WithMany()
@@ -623,6 +672,8 @@ namespace Japaninja.Repositories.Migrations
                         .IsRequired();
 
                     b.Navigation("Address");
+
+                    b.Navigation("Courier");
 
                     b.Navigation("Customer");
                 });
@@ -748,6 +799,11 @@ namespace Japaninja.Repositories.Migrations
             modelBuilder.Entity("Japaninja.DomainModel.Models.Product", b =>
                 {
                     b.Navigation("ProductsIngredients");
+                });
+
+            modelBuilder.Entity("Japaninja.DomainModel.Identity.CourierUser", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Japaninja.DomainModel.Identity.CustomerUser", b =>

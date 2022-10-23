@@ -31,9 +31,15 @@ public class JapaninjaDbContext : IdentityDbContext
 
     public DbSet<CustomersOrders> CustomersOrders { get; set; }
 
+    public DbSet<CouriersOrders> CouriersOrders { get; set; }
+
     public DbSet<OrdersCutlery> OrdersCutlery { get; set; }
 
     public DbSet<OrdersProducts> OrdersProducts { get; set; }
+
+    public DbSet<City> Cities { get; set; }
+
+    public DbSet<Restaurant> Restaurants { get; set; }
 
 
     public JapaninjaDbContext(DbContextOptions<JapaninjaDbContext> options)
@@ -74,6 +80,12 @@ public class JapaninjaDbContext : IdentityDbContext
 
     private void Seed(ModelBuilder builder)
     {
+        builder.Entity<IdentityRole>().HasData(
+            new IdentityRole { Name = "Customer" },
+            new IdentityRole { Name = "Manager" },
+            new IdentityRole { Name = "Courier" }
+        );
+
         builder.Entity<SpicinessTypes>().HasData(
             new SpicinessTypes { Id = Spiciness.Spicy},
             new SpicinessTypes { Id = Spiciness.NotSpicy}

@@ -1,22 +1,27 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Japaninja.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddJapaninjaAuthentication(this IServiceCollection services)
+    public static void AddJapaninjaAuthentication(this IServiceCollection services, SymmetricSecurityKey jwtKey)
     {
-        services.AddAuthentication(IdentityConstants.ApplicationScheme)
-            .AddCookie(IdentityConstants.ApplicationScheme, options =>
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(o =>
             {
-                options.Events.OnRedirectToLogin += context =>
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    context.Response.StatusCode = 401;
-
-                    return Task.CompletedTask;
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    IssuerSigningKey = jwtKey,
                 };
-            }).AddCookie(IdentityConstants.ExternalScheme)
-            .AddCookie(IdentityConstants.TwoFactorUserIdScheme);;
+            });
     }
 }

@@ -292,7 +292,8 @@ namespace Japaninja.Repositories.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourierId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AddressId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     DeliveryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryFactTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -314,8 +315,37 @@ namespace Japaninja.Repositories.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Orders_Users_CourierId",
+                        column: x => x.CourierId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Orders_Users_CustomerId",
                         column: x => x.CustomerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CouriersOrders",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourierId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CouriersOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CouriersOrders_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CouriersOrders_Users_CourierId",
+                        column: x => x.CourierId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -429,6 +459,18 @@ namespace Japaninja.Repositories.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_CouriersOrders_CourierId_OrderId",
+                table: "CouriersOrders",
+                columns: new[] { "CourierId", "OrderId" },
+                unique: true,
+                filter: "[CourierId] IS NOT NULL AND [OrderId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CouriersOrders_OrderId",
+                table: "CouriersOrders",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CustomerAddresses_CustomerId",
                 table: "CustomerAddresses",
                 column: "CustomerId");
@@ -449,6 +491,11 @@ namespace Japaninja.Repositories.Migrations
                 name: "IX_Orders_AddressId",
                 table: "Orders",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CourierId",
+                table: "Orders",
+                column: "CourierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
@@ -548,6 +595,9 @@ namespace Japaninja.Repositories.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "CouriersOrders");
+
             migrationBuilder.DropTable(
                 name: "CustomersOrders");
 

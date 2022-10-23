@@ -14,12 +14,21 @@ public class Order : IHasId
 
     public CustomerUser Customer { get; set; }
 
+    public string CourierId { get; set; }
+
+    public CourierUser Courier { get; set; }
+
+    public string RestaurantId { get; set; }
+
+    public Restaurant Restaurant { get; set; }
+
+    public string CustomerAddressId { get; set; }
+
+    public CustomerAddress CustomerAddress { get; set; }
+
     public IReadOnlyCollection<OrdersProducts> Products { get; set; }
 
     public IReadOnlyCollection<OrdersCutlery> Cutlery { get; set; }
-
-    public string AddressId { get; set; }
-    public CustomerAddress Address { get; set; }
 
     public DateTime DeliveryTime { get; set; }
 
