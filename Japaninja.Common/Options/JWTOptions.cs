@@ -1,4 +1,4 @@
-﻿namespace Japaninja.Options;
+﻿namespace Japaninja.Common.Options;
 
 public class JWTOptions
 {

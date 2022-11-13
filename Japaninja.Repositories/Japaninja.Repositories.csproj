@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Japaninja.Common\Japaninja.Common.csproj" />
       <ProjectReference Include="..\Japaninja.DomainModel\Japaninja.DomainModel.csproj" />
     </ItemGroup>
 

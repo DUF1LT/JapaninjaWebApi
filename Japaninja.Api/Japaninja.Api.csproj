@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Japaninja.DomainModel\Japaninja.DomainModel.csproj" />
     <ProjectReference Include="..\Japaninja.Repositories\Japaninja.Repositories.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services" />
+  </ItemGroup>
 </Project>

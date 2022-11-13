@@ -1,37 +1,35 @@
 ﻿using CryptoHelper;
+using Japaninja.Extensions;
 using Japaninja.JWT;
 using Japaninja.Models.Auth;
+using Microsoft.AspNetCore.Identity;
 
 namespace Japaninja.Services.Auth;
 
 public class AuthService : IAuthService
 {
     private readonly IJwtGenerator _jwtGenerator;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AuthService(IJwtGenerator jwtGenerator)
+    public AuthService(IJwtGenerator jwtGenerator, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         _jwtGenerator = jwtGenerator;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
-    public AuthData GetAuthData(string id)
+    public async Task<AuthData> GetAuthDataAsync(string id)
     {
         var tokenDescriptor = _jwtGenerator.GenerateToken(id);
+        var role = await _userManager.GetUserRoleByUserId(id);
 
         return new AuthData
         {
             Id = id,
             Token = tokenDescriptor.Token,
-            TokenExpirationTime = ((DateTimeOffset)tokenDescriptor.ExpirationDate).ToUnixTimeSeconds(),
+            TokenExpirationTime = ((DateTimeOffset)tokenDescriptor.ExpirationDate).ToUnixTimeMilliseconds(),
+            Role = role
         };
-    }
-
-    public string HashPassword(string password)
-    {
-        return Crypto.HashPassword(password);
-    }
-
-    public bool VerifyPassword(string actualPassword, string hashedPassword)
-    {
-        return Crypto.VerifyHashedPassword(hashedPassword, actualPassword);
     }
 }

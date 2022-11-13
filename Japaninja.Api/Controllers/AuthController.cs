@@ -1,4 +1,5 @@
-﻿using Japaninja.Models.Auth;
+﻿using Japaninja.Common.Helpers;
+using Japaninja.Models.Auth;
 using Japaninja.Models.Error;
 using Japaninja.Services.Auth;
 using Japaninja.Services.User;
@@ -33,21 +34,21 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthData>> Login([FromBody] LoginUser login)
     {
-        var user = await _customerService.GetCustomerByEmailAsync(login.Email);
-
+        var user = await _userManager.FindByEmailAsync(login.Email);
         if (user is null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserDoesNotExist));
         }
 
-        var isPasswordValid = _authService.VerifyPassword(login.Password, user.PasswordHash);
-
-        if (!isPasswordValid)
+        var isPasswordValidResult = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash,login.Password);
+        if (isPasswordValidResult != PasswordVerificationResult.Success)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.PasswordIsInvalid));
         }
 
-        return _authService.GetAuthData(user.Id);
+        var authData = await _authService.GetAuthDataAsync(user.Id);
+
+        return authData;
     }
 
     [HttpPost("register")]
@@ -62,6 +63,8 @@ public class AuthController : ControllerBase
 
         var customerId = await _customerService.AddCustomerAsync(register.Email, register.Password);
 
-        return _authService.GetAuthData(customerId);
+        var authData = await _authService.GetAuthDataAsync(customerId);
+
+        return authData;
     }
 }

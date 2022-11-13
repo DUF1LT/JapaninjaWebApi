@@ -1,7 +1,8 @@
-﻿using Japaninja.DomainModel.Identity;
+﻿using Japaninja.Common.Helpers;
+using Japaninja.DomainModel.Identity;
+using Japaninja.Repositories.Constants;
 using Japaninja.Repositories.Repositories.User.Customer;
 using Japaninja.Repositories.UnitOfWork;
-using Japaninja.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 
 namespace Japaninja.Services.User;
@@ -9,14 +10,17 @@ namespace Japaninja.Services.User;
 public class CustomerService : ICustomerService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthService _authService;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
     public CustomerService(
         IUnitOfWorkFactory<UnitOfWork> unitOfWorkFactory,
-        IAuthService authService)
+        UserManager<IdentityUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
+        _userManager = userManager;
+        _roleManager = roleManager;
         _unitOfWork = unitOfWorkFactory.Create();
-        _authService = authService;
     }
 
 
@@ -36,19 +40,16 @@ public class CustomerService : ICustomerService
 
     public async Task<string> AddCustomerAsync(string email, string password)
     {
-        var customerRepository = _unitOfWork.GetRepository<CustomerUser, CustomerRepository>();
-
         var customerId = Guid.NewGuid().ToString();
         var customer = new CustomerUser
         {
             Id = customerId,
+            UserName = email,
             Email = email,
-            PasswordHash = _authService.HashPassword(password),
         };
 
-        customerRepository.Add(customer);
-
-        await _unitOfWork.SaveChangesAsync();
+        await _userManager.CreateAsync(customer, password);
+        await _userManager.AddToRoleAsync(customer, Roles.Customer);
 
         return customerId;
     }

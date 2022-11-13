@@ -80,12 +80,6 @@ public class JapaninjaDbContext : IdentityDbContext
 
     private void Seed(ModelBuilder builder)
     {
-        builder.Entity<IdentityRole>().HasData(
-            new IdentityRole { Name = "Customer" },
-            new IdentityRole { Name = "Manager" },
-            new IdentityRole { Name = "Courier" }
-        );
-
         builder.Entity<SpicinessTypes>().HasData(
             new SpicinessTypes { Id = Spiciness.Spicy},
             new SpicinessTypes { Id = Spiciness.NotSpicy}
