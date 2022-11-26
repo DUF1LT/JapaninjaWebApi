@@ -11,10 +11,6 @@ public class ProductsIngredientsConfiguration : IEntityTypeConfiguration<Product
         builder.HasIndex(p => new { p.ProductId, p.IngredientId })
             .IsUnique();
 
-        builder.HasOne(p => p.Product)
-            .WithMany(p => p.ProductsIngredients)
-            .HasForeignKey(p => p.ProductId);
-
         builder.HasOne(p => p.Ingredient)
             .WithMany()
             .HasForeignKey(p => p.IngredientId);

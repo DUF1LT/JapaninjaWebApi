@@ -17,17 +17,17 @@ public class AuthController : ControllerBase
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IAuthService _authService;
-    private readonly ICustomerService _customerService;
+    private readonly ICustomersService _customersService;
 
     public AuthController(
         SignInManager<IdentityUser> signInManager,
         IAuthService authService,
-        ICustomerService customerService,
+        ICustomersService customersService,
         UserManager<IdentityUser> userManager)
     {
         _signInManager = signInManager;
         _authService = authService;
-        _customerService = customerService;
+        _customersService = customersService;
         _userManager = userManager;
     }
 
@@ -54,14 +54,14 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<AuthData>> Register([FromBody] RegisterUser register)
     {
-        var user = await _customerService.GetCustomerByEmailAsync(register.Email);
+        var user = await _customersService.GetCustomerByEmailAsync(register.Email);
 
         if (user is not null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserWithTheSameEmailAlreadyExist));
         }
 
-        var customerId = await _customerService.AddCustomerAsync(register.Email, register.Password);
+        var customerId = await _customersService.AddCustomerAsync(register.Email, register.Password);
 
         var authData = await _authService.GetAuthDataAsync(customerId);
 

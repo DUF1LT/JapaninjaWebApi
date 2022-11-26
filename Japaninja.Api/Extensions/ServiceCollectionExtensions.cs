@@ -1,5 +1,9 @@
-﻿using Japaninja.Repositories;
+﻿using Japaninja.Authorization;
+using Japaninja.Authorization.Requirements;
+using Japaninja.Authorization.Requirements.Roles;
+using Japaninja.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,9 +24,13 @@ public static class ServiceCollectionExtensions
             .AddDefaultTokenProviders();
     }
 
-    public static void AddJapaninjaAuthentication(this IServiceCollection services, SymmetricSecurityKey jwtKey)
+    public static IServiceCollection AddJapaninjaAuthentication(this IServiceCollection services, SymmetricSecurityKey jwtKey)
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters
@@ -34,5 +42,23 @@ public static class ServiceCollectionExtensions
                     IssuerSigningKey = jwtKey,
                 };
             });
+
+        return services;
+    }
+
+    public static IServiceCollection AddJapaninjaAuthorization(this IServiceCollection services)
+    {
+        services.AddAuthorization(o =>
+        {
+            o.AddPolicy(Policies.IsManager, p => p.IsManager());
+            o.AddPolicy(Policies.IsCustomer, p => p.IsCustomer());
+            o.AddPolicy(Policies.IsCourier, p => p.IsCourier());
+        });
+
+        services.AddScoped<IAuthorizationHandler, IsManagerRequirementHandler>();
+        services.AddScoped<IAuthorizationHandler, IsCustomerRequirementHandler>();
+        services.AddScoped<IAuthorizationHandler, IsCourierRequirementHandler>();
+
+        return services;
     }
 }

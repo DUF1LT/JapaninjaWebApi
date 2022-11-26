@@ -1,7 +1,6 @@
 ﻿using Japaninja.DomainModel.Models.Interfaces;
 using Japaninja.Repositories.Repositories;
 using Japaninja.Repositories.Repositories.User;
-using Japaninja.Repositories.Repositories.User.Customer;
 
 namespace Japaninja.Repositories.UnitOfWork;
 

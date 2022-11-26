@@ -21,8 +21,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthData> GetAuthDataAsync(string id)
     {
-        var tokenDescriptor = _jwtGenerator.GenerateToken(id);
         var role = await _userManager.GetUserRoleByUserId(id);
+        var tokenDescriptor = _jwtGenerator.GenerateToken(id, role);
 
         return new AuthData
         {

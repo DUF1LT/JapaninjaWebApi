@@ -5,5 +5,5 @@ namespace Japaninja.JWT;
 
 public interface IJwtGenerator
 {
-    JWTTokenDescriptor GenerateToken(string userId);
+    JWTTokenDescriptor GenerateToken(string userId, string role);
 }

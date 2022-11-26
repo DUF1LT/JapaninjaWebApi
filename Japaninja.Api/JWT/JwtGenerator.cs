@@ -3,10 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using Japaninja.Common.Options;
 using Japaninja.Models.Auth;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Japaninja.JWT;
 
@@ -21,14 +19,14 @@ public class JwtGenerator : IJwtGenerator
         _tokenLifespan = options.Value.Lifespan;
     }
 
-
-    public JWTTokenDescriptor GenerateToken(string userId)
+    public JWTTokenDescriptor GenerateToken(string userId, string role)
     {
         var expirationDate = DateTime.UtcNow.AddSeconds(_tokenLifespan);
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, userId)
+            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.Role, role)
         };
 
         var credentials = new SigningCredentials(_secretToken, SecurityAlgorithms.HmacSha512Signature);

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Japaninja.Services.User;
 
-public interface ICustomerService
+public interface ICustomersService
 {
     Task<CustomerUser> GetCustomerByIdAsync(string id);
 
