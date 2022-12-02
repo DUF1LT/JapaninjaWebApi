@@ -3,13 +3,13 @@ using Japaninja.Models.Auth;
 
 namespace Japaninja.Validators;
 
-public class RegisterValidator : AbstractValidator<RegisterUser>
+public class RegisterValidator : AbstractValidator<RegisterCustomerUser>
 {
     public RegisterValidator()
     {
         RuleFor(l => l.Email).NotEmpty();
         RuleFor(l => l.Email).EmailAddress();
         RuleFor(l => l.Password).NotEmpty();
-        RuleFor(l => l.ConfirmPassword).NotEmpty().Equal(x => x.Password);
+        RuleFor(l => l.RepeatPassword).NotEmpty().Equal(x => x.Password);
     }
 }

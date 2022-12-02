@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using Japaninja.Common.Options;
+using Japaninja.Creators.CourierUserCreator;
 using Japaninja.Creators.ProductCreator;
 using Japaninja.Extensions;
 using Japaninja.JWT;
@@ -13,8 +14,6 @@ using Japaninja.Repositories.UnitOfWork;
 using Japaninja.Services.Auth;
 using Japaninja.Services.Product;
 using Japaninja.Services.User;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -62,18 +61,19 @@ var jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[$"{JW
 builder.Services.AddJapaninjaAuthentication(jwtKey);
 builder.Services.AddJapaninjaAuthorization();
 
-builder.Services.AddSingleton<IUnitOfWorkFactory<UnitOfWork>, UnitOfWorkFactory>();
+builder.Services.AddTransient<IUnitOfWorkFactory<UnitOfWork>, UnitOfWorkFactory>();
 builder.Services.AddSingleton<IJwtGenerator, JwtGenerator>();
-builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 
-builder.Services.AddSingleton<ICustomersService, CustomersService>();
-builder.Services.AddSingleton<ICouriersService, CouriersService>();
-builder.Services.AddSingleton<IProductService, ProductService>();
+builder.Services.AddTransient<ICustomersService, CustomersService>();
+builder.Services.AddTransient<ICouriersService, CouriersService>();
+builder.Services.AddTransient<IProductService, ProductService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddSingleton<IProductCreator, ProductCreator>();
+builder.Services.AddSingleton<ICourierUserCreator, CourierUserCreator>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -90,7 +90,6 @@ app.UseCors();
 app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>

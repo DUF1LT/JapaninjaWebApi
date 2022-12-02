@@ -6,5 +6,7 @@ namespace Japaninja.DomainModel.Identity;
 
 public class CourierUser : IdentityUser, IHasId
 {
+    public string FullName { get; set; }
+    
     public IReadOnlyCollection<CouriersOrders> Orders { get; set; }
 }

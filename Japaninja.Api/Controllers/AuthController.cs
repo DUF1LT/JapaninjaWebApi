@@ -32,15 +32,15 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthData>> Login([FromBody] LoginUser login)
+    public async Task<ActionResult<AuthData>> Login([FromBody] LoginCustomerUser loginCustomer)
     {
-        var user = await _userManager.FindByEmailAsync(login.Email);
+        var user = await _userManager.FindByEmailAsync(loginCustomer.Email);
         if (user is null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserDoesNotExist));
         }
 
-        var isPasswordValidResult = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash,login.Password);
+        var isPasswordValidResult = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash,loginCustomer.Password);
         if (isPasswordValidResult != PasswordVerificationResult.Success)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.PasswordIsInvalid));
@@ -52,16 +52,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthData>> Register([FromBody] RegisterUser register)
+    public async Task<ActionResult<AuthData>> Register([FromBody] RegisterCustomerUser registerCustomer)
     {
-        var user = await _customersService.GetCustomerByEmailAsync(register.Email);
+        var user = await _customersService.GetCustomerByEmailAsync(registerCustomer.Email);
 
         if (user is not null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserWithTheSameEmailAlreadyExist));
         }
 
-        var customerId = await _customersService.AddCustomerAsync(register.Email, register.Password);
+        var customerId = await _customersService.AddCustomerAsync(registerCustomer.Email, registerCustomer.Password);
 
         var authData = await _authService.GetAuthDataAsync(customerId);
 

@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddIdentity<IdentityUser, IdentityRole>(o =>
             {
                 o.Password.RequireNonAlphanumeric = false;
+                o.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789-._@+";
             })
             .AddSignInManager<SignInManager<IdentityUser>>()
             .AddRoleManager<RoleManager<IdentityRole>>()

@@ -1,4 +1,5 @@
-﻿using Japaninja.DomainModel.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Japaninja.DomainModel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,6 +13,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(p => p.Status).IsRequired();
         builder.Property(p => p.CustomerId).IsRequired();
         builder.Property(p => p.RestaurantId).IsRequired();
+        builder.Property(p => p.NumberId).IsRequired().ValueGeneratedOnAdd();
 
         builder.HasOne(p => p.Customer)
             .WithMany()

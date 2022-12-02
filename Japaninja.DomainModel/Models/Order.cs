@@ -1,4 +1,5 @@
-﻿using Japaninja.DomainModel.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Japaninja.DomainModel.Identity;
 using Japaninja.DomainModel.Models.Enums;
 using Japaninja.DomainModel.Models.Interfaces;
 
@@ -9,6 +10,8 @@ public class Order : IHasId
     public const int MaxCommentLength = 500;
 
     public string Id { get; set; }
+
+    public int NumberId { get; set; }
 
     public string CustomerId { get; set; }
 

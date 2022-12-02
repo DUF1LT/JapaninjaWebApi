@@ -1,6 +1,8 @@
 ﻿using Japaninja.Authorization;
-using Japaninja.Models.Auth;
+using Japaninja.Creators.CourierUserCreator;
+using Japaninja.DomainModel.Identity;
 using Japaninja.Models.Error;
+using Japaninja.Models.User;
 using Japaninja.Services.Auth;
 using Japaninja.Services.User;
 using Microsoft.AspNetCore.Authorization;
@@ -15,27 +17,44 @@ public class CouriersController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly ICouriersService _couriersService;
+    private readonly ICourierUserCreator _courierUserCreator;
 
     public CouriersController(
         ICouriersService couriersService,
-        IAuthService authService)
+        IAuthService authService,
+        ICourierUserCreator courierUserCreator)
     {
         _couriersService = couriersService;
         _authService = authService;
+        _courierUserCreator = courierUserCreator;
     }
 
     [Authorize(Policy = Policies.IsManager)]
-    [HttpPut]
-    public async Task<ActionResult<string>> RegisterNewCourier(RegisterUser courier)
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyCollection<CourierUserModel>>> GetCouriers()
     {
-        var user = await _couriersService.GetCourierByEmailAsync(courier.Email);
+        var couriers = await _couriersService.GetCouriers();
+        var couriersModels = couriers.Select(_courierUserCreator.CreateFrom).ToList();
+
+        return Ok(couriersModels);
+    }
+
+    [Authorize(Policy = Policies.IsManager)]
+    [HttpPost]
+    public async Task<ActionResult<string>> RegisterNewCourier(RegisterCourierUser registerCourier)
+    {
+        var user = await _couriersService.GetCourierByEmailAsync(registerCourier.Email);
 
         if (user is not null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserWithTheSameEmailAlreadyExist));
         }
 
-        var customerId = await _couriersService.AddCourierAsync(courier.Email, courier.Password);
+        var customerId = await _couriersService.AddCourierAsync(registerCourier);
+        if (customerId is null)
+        {
+            return BadRequest();
+        }
 
         return Ok(customerId);
     }
@@ -45,7 +64,7 @@ public class CouriersController : ControllerBase
     public async Task<ActionResult<string>> FireCourier(string id)
     {
         var user = await _couriersService.GetCourierByIdAsync(id);
-        if (user is not null)
+        if (user is null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserDoesNotExist));
         }

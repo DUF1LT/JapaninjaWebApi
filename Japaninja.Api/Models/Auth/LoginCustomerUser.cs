@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Japaninja.Validators;
 
 namespace Japaninja.Models.Auth;
 
-public class RegisterUser
+public class LoginCustomerUser
 {
     [Required]
     [EmailAddress]
@@ -10,8 +11,4 @@ public class RegisterUser
 
     [Required]
     public string Password { get; set; }
-
-    [Required]
-    [Compare("Password")]
-    public string ConfirmPassword { get; set; }
 }
