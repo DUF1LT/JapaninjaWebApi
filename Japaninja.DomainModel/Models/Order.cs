@@ -17,6 +17,10 @@ public class Order : IHasId
 
     public CustomerUser Customer { get; set; }
 
+    public string CustomerName { get; set; }
+
+    public string CustomerPhoneNumber { get; set; }
+
     public string CourierId { get; set; }
 
     public CourierUser Courier { get; set; }
@@ -35,7 +39,7 @@ public class Order : IHasId
 
     public DateTime DeliveryTime { get; set; }
 
-    public DateTime DeliveryFactTime { get; set; }
+    public DateTime? DeliveryFactTime { get; set; }
 
     public OrderStatus Status { get; set; }
 

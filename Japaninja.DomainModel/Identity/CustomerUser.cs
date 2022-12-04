@@ -7,4 +7,6 @@ namespace Japaninja.DomainModel.Identity;
 public class CustomerUser : IdentityUser, IHasId
 {
     public IReadOnlyCollection<CustomersOrders> Orders { get; set; }
+
+    public IReadOnlyCollection<CustomerAddress> Addresses { get; set; }
 }

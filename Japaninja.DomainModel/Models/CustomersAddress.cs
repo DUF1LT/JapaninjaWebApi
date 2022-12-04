@@ -11,15 +11,5 @@ public class CustomerAddress : IHasId
 
     public CustomerUser Customer { get; set; }
 
-    public string Street { get; set; }
-
-    public string House { get; set; }
-
-    public string Housing { get; set; }
-
-    public string Flat { get; set; }
-
-    public string Entrance { get; set; }
-
-    public string Floor { get; set; }
+    public string Address { get; set; }
 }

@@ -11,9 +11,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
         builder.Property(p => p.Comment).HasMaxLength(Order.MaxCommentLength);
         builder.Property(p => p.Status).IsRequired();
-        builder.Property(p => p.CustomerId).IsRequired();
         builder.Property(p => p.RestaurantId).IsRequired();
         builder.Property(p => p.NumberId).IsRequired().ValueGeneratedOnAdd();
+        builder.Property(p => p.DeliveryFactTime).IsRequired(false);
 
         builder.HasOne(p => p.Customer)
             .WithMany()

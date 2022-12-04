@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using Japaninja.Common.Options;
 using Japaninja.Creators.CourierUserCreator;
+using Japaninja.Creators.OrderCreator;
 using Japaninja.Creators.ProductCreator;
 using Japaninja.Extensions;
 using Japaninja.JWT;
@@ -12,6 +13,7 @@ using Japaninja.Repositories;
 using Japaninja.Repositories.DatabaseInitializer;
 using Japaninja.Repositories.UnitOfWork;
 using Japaninja.Services.Auth;
+using Japaninja.Services.Order;
 using Japaninja.Services.Product;
 using Japaninja.Services.User;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,8 @@ builder.Services.AddSingleton(GetLogger);
 
 builder.Services.Configure<JWTOptions>(configuration.GetSection(JWTOptions.SectionName));
 builder.Services.Configure<ManagerCredentialsOptions>(configuration.GetSection(ManagerCredentialsOptions.SectionName));
+builder.Services.Configure<OrderConfigurationOptions>(configuration.GetSection(OrderConfigurationOptions.SectionName));
+builder.Services.Configure<RestaurantConfigurationOptions>(configuration.GetSection(RestaurantConfigurationOptions.SectionName));
 
 builder.Services.AddDbContext<JapaninjaDbContext>(options =>
     options.UseSqlServer(
@@ -68,12 +72,14 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<ICustomersService, CustomersService>();
 builder.Services.AddTransient<ICouriersService, CouriersService>();
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddSingleton<IProductCreator, ProductCreator>();
 builder.Services.AddSingleton<ICourierUserCreator, CourierUserCreator>();
+builder.Services.AddSingleton<IOrderCreator, OrderCreator>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

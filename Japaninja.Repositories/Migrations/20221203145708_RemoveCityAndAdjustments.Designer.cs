@@ -4,6 +4,7 @@ using Japaninja.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Japaninja.Repositories.Migrations
 {
     [DbContext(typeof(JapaninjaDbContext))]
-    partial class JapaninjaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221203145708_RemoveCityAndAdjustments")]
+    partial class RemoveCityAndAdjustments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,11 +51,26 @@ namespace Japaninja.Repositories.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CustomerId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Entrance")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Flat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Floor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("House")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Housing")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -87,7 +104,6 @@ namespace Japaninja.Repositories.Migrations
             modelBuilder.Entity("Japaninja.DomainModel.Models.Cutlery", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
@@ -98,6 +114,18 @@ namespace Japaninja.Repositories.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cutlery");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "0",
+                            Name = "Fork"
+                        },
+                        new
+                        {
+                            Id = "1",
+                            Name = "Sticks"
+                        });
                 });
 
             modelBuilder.Entity("Japaninja.DomainModel.Models.Ingredient", b =>
@@ -131,15 +159,10 @@ namespace Japaninja.Repositories.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CustomerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeliveryFactTime")
+                    b.Property<DateTime>("DeliveryFactTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DeliveryTime")
@@ -688,7 +711,9 @@ namespace Japaninja.Repositories.Migrations
 
                     b.HasOne("Japaninja.DomainModel.Identity.CustomerUser", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Japaninja.DomainModel.Models.Restaurant", "Restaurant")
                         .WithMany()

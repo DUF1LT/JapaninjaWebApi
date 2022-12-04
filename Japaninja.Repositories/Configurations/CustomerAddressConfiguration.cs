@@ -9,7 +9,7 @@ public class CustomerAddressConfiguration : IEntityTypeConfiguration<CustomerAdd
     public void Configure(EntityTypeBuilder<CustomerAddress> builder)
     {
         builder.HasOne(p => p.Customer)
-            .WithMany()
+            .WithMany(p => p.Addresses)
             .HasForeignKey(p => p.CustomerId);
     }
 }

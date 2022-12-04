@@ -4,6 +4,7 @@ using Japaninja.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Japaninja.Repositories.Migrations
 {
     [DbContext(typeof(JapaninjaDbContext))]
-    partial class JapaninjaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221204115526_AdjustCustomerAddressTable")]
+    partial class AdjustCustomerAddressTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,9 +93,7 @@ namespace Japaninja.Repositories.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -131,15 +131,10 @@ namespace Japaninja.Repositories.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CustomerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeliveryFactTime")
+                    b.Property<DateTime>("DeliveryFactTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DeliveryTime")
@@ -627,6 +622,9 @@ namespace Japaninja.Repositories.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("bit");
+
                     b.HasDiscriminator().HasValue("CustomerUser");
                 });
 
@@ -688,7 +686,9 @@ namespace Japaninja.Repositories.Migrations
 
                     b.HasOne("Japaninja.DomainModel.Identity.CustomerUser", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Japaninja.DomainModel.Models.Restaurant", "Restaurant")
                         .WithMany()

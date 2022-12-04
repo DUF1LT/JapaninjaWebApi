@@ -37,8 +37,6 @@ public class JapaninjaDbContext : IdentityDbContext
 
     public DbSet<OrdersProducts> OrdersProducts { get; set; }
 
-    public DbSet<City> Cities { get; set; }
-
     public DbSet<Restaurant> Restaurants { get; set; }
 
 
@@ -103,11 +101,6 @@ public class JapaninjaDbContext : IdentityDbContext
             new ProductTypes { Id = ProductType.Drinks},
             new ProductTypes { Id = ProductType.Garnish},
             new ProductTypes { Id = ProductType.Snacks}
-        );
-
-        builder.Entity<Cutlery>().HasData(
-            new Cutlery { Id = "0", Name = "Fork" },
-            new Cutlery { Id = "1", Name = "Sticks" }
         );
     }
 
