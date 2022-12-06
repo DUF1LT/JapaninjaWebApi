@@ -4,5 +4,9 @@ public enum ApiError
 {
     UserDoesNotExist,
     UserWithTheSameEmailAlreadyExist,
-    PasswordIsInvalid
+    PasswordIsInvalid,
+
+    OrderShouldBeInProcessingStatus,
+    OrderShouldBeInPreparingStatus,
+    YouCanNotCancelOrderNotInProcessingStatus,
 }

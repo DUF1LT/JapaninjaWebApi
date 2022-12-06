@@ -6,6 +6,6 @@ public enum OrderStatus
     Preparing,
     Ready,
     Shipping,
-    Delivered,
-    Closed
+    Closed,
+    Canceled,
 }

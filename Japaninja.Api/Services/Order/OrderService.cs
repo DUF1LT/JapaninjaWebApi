@@ -9,6 +9,7 @@ using Japaninja.Repositories.Repositories.Order;
 using Japaninja.Repositories.Repositories.Restaurant;
 using Japaninja.Repositories.Repositories.User.Customers;
 using Japaninja.Repositories.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Japaninja.Services.Order;
@@ -53,7 +54,7 @@ public class OrderService : IOrderService
         };
     }
 
-    public async Task<CreatedOrderInfo> CreateOrderAsync(CreateOrder createOrder)
+    public async Task<string> CreateOrderAsync(CreateOrder createOrder)
     {
         var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
         var customerRepository = _unitOfWork.GetRepository<CustomerUser, CustomersRepository>();
@@ -101,20 +102,64 @@ public class OrderService : IOrderService
 
         order.Products = _orderCreator.CreateFrom(order, createOrder.Products);
         order.Cutlery = _orderCreator.CreateFrom(order, createOrder.Cutlery);
+        order.Price = order.Products.Sum(p => p.Product.Price * p.Amount);
 
         orderRepository.Add(order);
 
         await _unitOfWork.SaveChangesAsync();
 
-        var createdOrder = await orderRepository.GetByIdAsync(order.Id);
+        return order.Id;
+    }
 
-        var createdOrderInfo = new CreatedOrderInfo
-        {
-            Number = createdOrder.NumberId,
-            Address = createdOrder.CustomerAddress.Address,
-            DeliveryTime = createdOrder.DeliveryTime,
-        };
+    public async Task<DomainModel.Models.Order> GetOrderAsync(string id)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
 
-        return createdOrderInfo;
+        var order = await orderRepository.GetQuery().Include(o => o.CustomerAddress).FirstOrDefaultAsync(p => p.Id == id);
+
+        return order;
+    }
+
+    public async Task<IReadOnlyCollection<DomainModel.Models.Order>> GetOrdersAsync(OrderStatus orderStatus)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var orders = await orderRepository.GetQuery()
+            .Include(o => o.CustomerAddress)
+            .Where(p => p.Status == orderStatus)
+            .OrderBy(p => p.NumberId)
+            .ToListAsync();
+
+        return orders;
+    }
+
+    public async Task CancelOrderAsync(string orderId)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var order = await orderRepository.GetByIdAsync(orderId);
+        order.Status = OrderStatus.Canceled;
+
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task ProcessOrderAsync(string orderId)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var order = await orderRepository.GetByIdAsync(orderId);
+        order.Status = OrderStatus.Preparing;
+
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task SetToReadyOrderAsync(string orderId)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var order = await orderRepository.GetByIdAsync(orderId);
+        order.Status = OrderStatus.Ready;
+
+        await _unitOfWork.SaveChangesAsync();
     }
 }

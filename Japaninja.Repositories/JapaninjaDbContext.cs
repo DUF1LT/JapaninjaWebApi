@@ -79,28 +79,28 @@ public class JapaninjaDbContext : IdentityDbContext
     private void Seed(ModelBuilder builder)
     {
         builder.Entity<SpicinessTypes>().HasData(
-            new SpicinessTypes { Id = Spiciness.Spicy},
-            new SpicinessTypes { Id = Spiciness.NotSpicy}
+            new SpicinessTypes { Id = Spiciness.Spicy },
+            new SpicinessTypes { Id = Spiciness.NotSpicy }
         );
 
         builder.Entity<OrderStatuses>().HasData(
-            new OrderStatuses { Id = OrderStatus.Processing},
-            new OrderStatuses { Id = OrderStatus.Preparing},
-            new OrderStatuses { Id = OrderStatus.Ready},
-            new OrderStatuses { Id = OrderStatus.Shipping},
-            new OrderStatuses { Id = OrderStatus.Delivered},
-            new OrderStatuses { Id = OrderStatus.Closed}
+            new OrderStatuses { Id = OrderStatus.Processing },
+            new OrderStatuses { Id = OrderStatus.Preparing },
+            new OrderStatuses { Id = OrderStatus.Ready },
+            new OrderStatuses { Id = OrderStatus.Shipping },
+            new OrderStatuses { Id = OrderStatus.Closed },
+            new OrderStatuses { Id = OrderStatus.Canceled }
         );
 
         builder.Entity<ProductTypes>().HasData(
-            new ProductTypes { Id = ProductType.Sushi},
-            new ProductTypes { Id = ProductType.Rolls},
-            new ProductTypes { Id = ProductType.Sets},
-            new ProductTypes { Id = ProductType.Soups},
-            new ProductTypes { Id = ProductType.Noodles},
-            new ProductTypes { Id = ProductType.Drinks},
-            new ProductTypes { Id = ProductType.Garnish},
-            new ProductTypes { Id = ProductType.Snacks}
+            new ProductTypes { Id = ProductType.Sushi },
+            new ProductTypes { Id = ProductType.Rolls },
+            new ProductTypes { Id = ProductType.Sets },
+            new ProductTypes { Id = ProductType.Soups },
+            new ProductTypes { Id = ProductType.Noodles },
+            new ProductTypes { Id = ProductType.Drinks },
+            new ProductTypes { Id = ProductType.Garnish },
+            new ProductTypes { Id = ProductType.Snacks }
         );
     }
 

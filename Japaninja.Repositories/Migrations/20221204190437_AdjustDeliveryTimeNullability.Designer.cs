@@ -4,6 +4,7 @@ using Japaninja.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Japaninja.Repositories.Migrations
 {
     [DbContext(typeof(JapaninjaDbContext))]
-    partial class JapaninjaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221204190437_AdjustDeliveryTimeNullability")]
+    partial class AdjustDeliveryTimeNullability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,9 +152,6 @@ namespace Japaninja.Repositories.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NumberId"), 1L, 1);
-
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
 
                     b.Property<string>("RestaurantId")
                         .IsRequired()
@@ -340,11 +339,11 @@ namespace Japaninja.Repositories.Migrations
                         },
                         new
                         {
-                            Id = "Closed"
+                            Id = "Delivered"
                         },
                         new
                         {
-                            Id = "Canceled"
+                            Id = "Closed"
                         });
                 });
 

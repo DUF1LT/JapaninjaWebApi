@@ -12,7 +12,7 @@ public class CreateOrder
 
     public Restaurant Restaurant { get; set; }
 
-    public DateTime DeliveryTime { get; set; }
+    public DateTime? DeliveryTime { get; set; }
 
     public string Address { get; set; }
 

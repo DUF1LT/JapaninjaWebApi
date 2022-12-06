@@ -35,9 +35,11 @@ public class Order : IHasId
 
     public IReadOnlyCollection<OrdersProducts> Products { get; set; }
 
+    public float Price { get; set; }
+
     public IReadOnlyCollection<OrdersCutlery> Cutlery { get; set; }
 
-    public DateTime DeliveryTime { get; set; }
+    public DateTime? DeliveryTime { get; set; }
 
     public DateTime? DeliveryFactTime { get; set; }
 
