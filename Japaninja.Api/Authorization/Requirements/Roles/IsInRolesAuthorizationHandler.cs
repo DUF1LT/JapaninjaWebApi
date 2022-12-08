@@ -5,21 +5,21 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Japaninja.Authorization.Requirements.Roles;
 
-public class IsInRoleAuthorizationHandler<T>: BaseAuthorizationHandler<T> where T : IAuthorizationRequirement
+public class IsInRolesAuthorizationHandler<T>: BaseAuthorizationHandler<T> where T : IAuthorizationRequirement
 {
-    private readonly string _role;
+    private readonly string[] _roles;
 
-    public IsInRoleAuthorizationHandler(UserManager<IdentityUser> userManager, string role)
+    public IsInRolesAuthorizationHandler(UserManager<IdentityUser> userManager, params string[] roles)
         : base(userManager)
     {
-        _role = role;
+        _roles = roles;
     }
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
     {
         var role = context.User.GetUserRole();
 
-        if (role is not null && role == _role)
+        if (role is not null && _roles.Contains(role))
         {
             context.Succeed(requirement);
         }

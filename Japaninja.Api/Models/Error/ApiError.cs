@@ -8,5 +8,9 @@ public enum ApiError
 
     OrderShouldBeInProcessingStatus,
     OrderShouldBeInPreparingStatus,
+    OrderShouldBeInReadyStatus,
+    OrderShouldBeInShippingStatus,
+    CanNotCloseOrderThatNotBelongsToYou,
+    CanNotCloseOrderInReadyStatusThatIsNotPickup,
     YouCanNotCancelOrderNotInProcessingStatus,
 }

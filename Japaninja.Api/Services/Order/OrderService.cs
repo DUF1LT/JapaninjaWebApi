@@ -3,9 +3,11 @@ using Japaninja.Creators.OrderCreator;
 using Japaninja.DomainModel.Identity;
 using Japaninja.DomainModel.Models;
 using Japaninja.DomainModel.Models.Enums;
+using Japaninja.Models.Addresses;
 using Japaninja.Models.Order;
 using Japaninja.Repositories.Repositories.Cutlery;
 using Japaninja.Repositories.Repositories.Order;
+using Japaninja.Repositories.Repositories.Product;
 using Japaninja.Repositories.Repositories.Restaurant;
 using Japaninja.Repositories.Repositories.User.Customers;
 using Japaninja.Repositories.UnitOfWork;
@@ -48,7 +50,7 @@ public class OrderService : IOrderService
         {
             DeliveryPrice = _orderConfigurationOptions.DeliveryPrice,
             MinDeliveryFreePrice = _orderConfigurationOptions.MinDeliveryFreePrice,
-            Addressess = customerAddresses ?? new List<CustomerAddress>(),
+            Addressess = customerAddresses?.Select(_orderCreator.CreateFrom).ToList(),
             Cutlery = availableCutlery,
             SelfPickupRestaurant = mainRestaurant,
         };
@@ -58,14 +60,17 @@ public class OrderService : IOrderService
     {
         var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
         var customerRepository = _unitOfWork.GetRepository<CustomerUser, CustomersRepository>();
+        var productRepository = _unitOfWork.GetRepository<DomainModel.Models.Product, ProductRepository>();
 
         var customer = await customerRepository.GetByIdAsync(createOrder.CustomerId);
 
-        var customerAddress = new CustomerAddress
-        {
-            Id = Guid.NewGuid().ToString(),
-            Address = createOrder.Address,
-        };
+        var customerAddress = string.IsNullOrEmpty(createOrder.Address.Trim())
+            ? new CustomerAddress
+            {
+                Id = Guid.NewGuid().ToString(),
+                Address = createOrder.Address
+            }
+            : null;
 
         if (customer is not null)
         {
@@ -102,7 +107,21 @@ public class OrderService : IOrderService
 
         order.Products = _orderCreator.CreateFrom(order, createOrder.Products);
         order.Cutlery = _orderCreator.CreateFrom(order, createOrder.Cutlery);
-        order.Price = order.Products.Sum(p => p.Product.Price * p.Amount);
+
+        var productsIds = order.Products.Select(p => p.ProductId).ToList();
+        var products = await productRepository.GetQuery()
+            .Where(p => productsIds.Contains(p.Id))
+            .ToListAsync();
+
+        var orderProducts = products.Select(p =>
+        {
+            return new
+            {
+                Product = p, createOrder.Products.FirstOrDefault(cp => cp.ProductId == p.Id)!.Amount,
+            };
+        }).ToList();
+
+        order.Price = orderProducts.Sum(p => p.Product.Price * p.Amount);
 
         orderRepository.Add(order);
 
@@ -115,7 +134,8 @@ public class OrderService : IOrderService
     {
         var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
 
-        var order = await orderRepository.GetQuery().Include(o => o.CustomerAddress).FirstOrDefaultAsync(p => p.Id == id);
+        var order = await orderRepository.GetFullIncludedQuery()
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         return order;
     }
@@ -124,10 +144,42 @@ public class OrderService : IOrderService
     {
         var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
 
-        var orders = await orderRepository.GetQuery()
-            .Include(o => o.CustomerAddress)
+        var orders = await orderRepository.GetFullIncludedQuery()
             .Where(p => p.Status == orderStatus)
-            .OrderBy(p => p.NumberId)
+            .OrderByDescending(p => p.NumberId)
+            .ToListAsync();
+
+        return orders;
+    }
+
+    public async Task<IReadOnlyCollection<DomainModel.Models.Order>> GetCustomerOrdersAsync(string customerId, bool isActiveOrders = true)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var baseQuery = orderRepository.GetFullIncludedQuery()
+            .Where(p => p.CustomerId == customerId);
+
+        if (!isActiveOrders)
+        {
+            baseQuery = baseQuery.Where(p => p.Status == OrderStatus.Closed);
+        }
+        else
+        {
+            baseQuery = baseQuery.Where(p => p.Status != OrderStatus.Closed);
+        }
+
+        var orders = await baseQuery.OrderByDescending(p => p.NumberId).ToListAsync();
+
+        return orders;
+    }
+
+    public async Task<IReadOnlyCollection<DomainModel.Models.Order>> GetCouriersOrdersAsync(string courierId, OrderStatus orderStatus)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var orders = await orderRepository.GetFullIncludedQuery()
+            .Where(p => p.Status == orderStatus && (p.CourierId == courierId || p.CustomerAddressId != null))
+            .OrderByDescending(p => p.NumberId)
             .ToListAsync();
 
         return orders;
@@ -159,6 +211,30 @@ public class OrderService : IOrderService
 
         var order = await orderRepository.GetByIdAsync(orderId);
         order.Status = OrderStatus.Ready;
+
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task ShipOrderAsync(string orderId, string courierId)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var order = await orderRepository.GetByIdAsync(orderId);
+
+        order.CourierId = courierId;
+        order.Status = OrderStatus.Shipping;
+
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task CloseOrderAsync(string orderId)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var order = await orderRepository.GetByIdAsync(orderId);
+
+        order.Status = OrderStatus.Closed;
+        order.DeliveryFactTime = DateTime.Now;
 
         await _unitOfWork.SaveChangesAsync();
     }

@@ -20,4 +20,9 @@ public static class AuthorizationPolicyBuilderExtensions
     {
         return authorizationPolicyBuilder.RequireAuthenticatedUser().AddRequirements(new IsCourierRequirement());
     }
+
+    public static AuthorizationPolicyBuilder IsCourierOrManager(this AuthorizationPolicyBuilder authorizationPolicyBuilder)
+    {
+        return authorizationPolicyBuilder.RequireAuthenticatedUser().AddRequirements(new IsCourierOrManagerRequirement());
+    }
 }

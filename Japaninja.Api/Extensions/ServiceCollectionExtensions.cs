@@ -54,11 +54,13 @@ public static class ServiceCollectionExtensions
             o.AddPolicy(Policies.IsManager, p => p.IsManager());
             o.AddPolicy(Policies.IsCustomer, p => p.IsCustomer());
             o.AddPolicy(Policies.IsCourier, p => p.IsCourier());
+            o.AddPolicy(Policies.IsCourierOrManager, p => p.IsCourierOrManager());
         });
 
         services.AddScoped<IAuthorizationHandler, IsManagerRequirementHandler>();
         services.AddScoped<IAuthorizationHandler, IsCustomerRequirementHandler>();
         services.AddScoped<IAuthorizationHandler, IsCourierRequirementHandler>();
+        services.AddScoped<IAuthorizationHandler, IsCourierOrManagerRequirementHandler>();
 
         return services;
     }

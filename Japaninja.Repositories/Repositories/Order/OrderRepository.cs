@@ -6,4 +6,14 @@ public class OrderRepository : Repository<DomainModel.Models.Order>, IOrderRepos
 {
     public OrderRepository(DbContext dbContext) : base(dbContext)
     { }
+
+    public IQueryable<DomainModel.Models.Order> GetFullIncludedQuery()
+    {
+        return DbSet.Include(o => o.CustomerAddress)
+            .Include(o => o.Restaurant)
+            .Include(o => o.Products)
+            .ThenInclude(p => p.Product)
+            .Include(o => o.Cutlery)
+            .ThenInclude(o => o.Cutlery);
+    }
 }

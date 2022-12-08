@@ -2,5 +2,5 @@
 
 public interface IOrderRepository
 {
-    
+    IQueryable<DomainModel.Models.Order> GetFullIncludedQuery();
 }
