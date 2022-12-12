@@ -1,6 +1,7 @@
 ﻿using Japaninja.Creators.ProductCreator;
 using Japaninja.DomainModel.Models.Enums;
 using Japaninja.Models.Product;
+using Japaninja.Models.Sorting;
 using Japaninja.Services.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,9 +34,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(ProductType? type)
+    public async Task<IActionResult> Get(ProductType? type, SortByField? sortField, SortByDirection? sortDirection)
     {
-        var products = await _productService.GetProducts(type);
+        var products = await _productService.GetProducts(type, sortField, sortDirection);
 
         return Ok(products);
     }

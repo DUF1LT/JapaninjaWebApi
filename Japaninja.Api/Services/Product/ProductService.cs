@@ -1,5 +1,8 @@
-﻿using Japaninja.DomainModel.Models.Enums;
+﻿using System.ComponentModel;
+using System.Linq.Expressions;
+using Japaninja.DomainModel.Models.Enums;
 using Japaninja.Logging;
+using Japaninja.Models.Sorting;
 using Japaninja.Repositories.Repositories.Product;
 using Japaninja.Repositories.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +18,7 @@ public class ProductService : IProductService
         _unitOfWork = unitOfWorkFactory.Create();
     }
 
-    public async Task<IReadOnlyCollection<DomainModel.Models.Product>> GetProducts(ProductType? type)
+    public async Task<IReadOnlyCollection<DomainModel.Models.Product>> GetProducts(ProductType? type, SortByField? sortByField, SortByDirection? sortByDirection)
     {
         var productRepo = _unitOfWork.GetRepository<DomainModel.Models.Product, ProductRepository>();
 
@@ -23,6 +26,17 @@ public class ProductService : IProductService
         if (type is not null)
         {
             baseQuery = baseQuery.Where(t => t.ProductType == type);
+        }
+
+        if (sortByField is not null && sortByDirection is not null)
+        {
+            var predicate =  GetPredicateBySortByField(sortByField.Value);
+            baseQuery = sortByDirection switch
+            {
+                SortByDirection.Ascending => baseQuery.OrderBy(predicate),
+                SortByDirection.Descending => baseQuery.OrderByDescending(predicate),
+                _ => baseQuery
+            };
         }
 
         var productsOfType = await baseQuery.ToListAsync();
@@ -82,5 +96,19 @@ public class ProductService : IProductService
         productRepo.Add(product);
 
         await _unitOfWork.SaveChangesAsync();
+    }
+
+
+    private Expression<Func<DomainModel.Models.Product, object>> GetPredicateBySortByField(SortByField sortByField)
+    {
+        switch (sortByField)
+        {
+            case SortByField.Name:
+                return p => p.Name;
+            case SortByField.Price:
+                return p => p.Price;
+            default:
+                throw new InvalidEnumArgumentException("Invalid sorting column was provided");
+        }
     }
 }

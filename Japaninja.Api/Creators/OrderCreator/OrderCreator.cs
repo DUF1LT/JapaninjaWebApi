@@ -17,7 +17,7 @@ public class OrderCreator : IOrderCreator
             Status = order.Status,
             Cutlery = order.Cutlery.Select(CreateFrom).ToList(),
             Products = order.Products.Select(CreateFrom).ToList(),
-            CustomerAddress = CreateFrom(order.CustomerAddress),
+            CustomerAddress = order.CustomerAddress is not null ? CreateFrom(order.CustomerAddress) : null,
             Restaurant = order.Restaurant,
             DeliveryTime = order.DeliveryTime,
             DeliveryFactTime = order.DeliveryFactTime,
