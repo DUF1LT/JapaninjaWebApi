@@ -3,7 +3,7 @@ using Japaninja.Models.Auth;
 
 namespace Japaninja.Validators;
 
-public class LoginValidator : AbstractValidator<LoginCustomerUser>
+public class LoginValidator : AbstractValidator<LoginUser>
 {
     public LoginValidator()
     {

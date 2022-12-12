@@ -3,7 +3,7 @@ using Japaninja.Validators;
 
 namespace Japaninja.Models.Auth;
 
-public class LoginCustomerUser
+public class LoginUser
 {
     [Required]
     [EmailAddress]

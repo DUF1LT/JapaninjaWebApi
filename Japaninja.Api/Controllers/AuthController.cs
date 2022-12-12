@@ -32,15 +32,15 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthData>> Login([FromBody] LoginCustomerUser loginCustomer)
+    public async Task<ActionResult<AuthData>> Login([FromBody] LoginUser login)
     {
-        var user = await _userManager.FindByEmailAsync(loginCustomer.Email);
+        var user = await _userManager.FindByEmailAsync(login.Email);
         if (user is null)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.UserDoesNotExist));
         }
 
-        var isPasswordValidResult = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash,loginCustomer.Password);
+        var isPasswordValidResult = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash,login.Password);
         if (isPasswordValidResult != PasswordVerificationResult.Success)
         {
             return BadRequest(ErrorResponse.CreateFromApiError(ApiError.PasswordIsInvalid));
