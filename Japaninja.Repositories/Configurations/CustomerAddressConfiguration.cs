@@ -11,5 +11,11 @@ public class CustomerAddressConfiguration : IEntityTypeConfiguration<CustomerAdd
         builder.HasOne(p => p.Customer)
             .WithMany(p => p.Addresses)
             .HasForeignKey(p => p.CustomerId);
+
+        builder.Property(p => p.Street).IsRequired().HasMaxLength(300);
+        builder.Property(p => p.HouseNumber).IsRequired().HasMaxLength(300);
+        builder.Property(p => p.FlatNumber).HasMaxLength(300);
+        builder.Property(p => p.Entrance).HasMaxLength(300);
+        builder.Property(p => p.Floor).HasMaxLength(300);
     }
 }

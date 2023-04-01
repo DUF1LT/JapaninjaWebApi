@@ -52,9 +52,13 @@ public class OrderCreator : IOrderCreator
     {
         return new CustomerAddressModel
         {
-            Id = customerAddress.Id,
-            Address = customerAddress.Address,
-            CustomerId = customerAddress.CustomerId,
+            Id = customerAddress?.Id,
+            CustomerId = customerAddress?.CustomerId,
+            Street = customerAddress?.Street,
+            HouseNumber = customerAddress?.HouseNumber,
+            FlatNumber = customerAddress?.FlatNumber,
+            Entrance = customerAddress?.Entrance,
+            Floor = customerAddress?.Floor,
         };
     }
 

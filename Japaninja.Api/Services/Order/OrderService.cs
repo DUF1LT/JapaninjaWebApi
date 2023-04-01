@@ -64,22 +64,21 @@ public class OrderService : IOrderService
 
         var customer = await customerRepository.GetByIdAsync(createOrder.CustomerId);
 
-        var customerAddress = string.IsNullOrEmpty(createOrder.Address.Trim())
-            ? new CustomerAddress
-            {
-                Id = Guid.NewGuid().ToString(),
-                Address = createOrder.Address
-            }
-            : null;
+        CustomerAddress customerAddress;
 
         if (customer is not null)
         {
             var existingCustomerAddresses = await customerRepository.GetCustomerAddressesAsync(customer.Id);
-            var providedCustomerAddress = existingCustomerAddresses.FirstOrDefault(a => a.Address == createOrder.Address);
+            var providedCustomerAddress = existingCustomerAddresses.FirstOrDefault(a => a.Id == createOrder.Address?.AddressId);
 
             if (providedCustomerAddress is not null)
             {
                 customerAddress = providedCustomerAddress;
+                customerAddress.Street = createOrder.Address?.Street;
+                customerAddress.HouseNumber = createOrder.Address?.HouseNumber;
+                customerAddress.FlatNumber = createOrder.Address?.FlatNumber;
+                customerAddress.Entrance = createOrder.Address?.Entrance;
+                customerAddress.Floor = createOrder.Address?.Floor;
             }
             else
             {
@@ -87,15 +86,31 @@ public class OrderService : IOrderService
                 {
                     Id = Guid.NewGuid().ToString(),
                     CustomerId = customer.Id,
-                    Address = createOrder.Address,
+                    Street = createOrder.Address?.Street,
+                    HouseNumber = createOrder.Address?.HouseNumber,
+                    FlatNumber = createOrder.Address?.FlatNumber,
+                    Entrance = createOrder.Address?.Entrance,
+                    Floor = createOrder.Address?.Floor,
                 };
             }
+        }
+        else
+        {
+            customerAddress = new CustomerAddress
+            {
+                Id = Guid.NewGuid().ToString(),
+                Street = createOrder.Address?.Street,
+                HouseNumber = createOrder.Address?.HouseNumber,
+                FlatNumber = createOrder.Address?.FlatNumber,
+                Entrance = createOrder.Address?.Entrance,
+                Floor = createOrder.Address?.Floor,
+            };
         }
 
         var order = new DomainModel.Models.Order
         {
             Id = Guid.NewGuid().ToString(),
-            RestaurantId = createOrder.Restaurant.Id,
+            RestaurantId = createOrder.Restaurant?.Id,
             Customer = customer,
             Comment = createOrder.AdditionalInfo,
             DeliveryTime = createOrder.DeliveryTime,

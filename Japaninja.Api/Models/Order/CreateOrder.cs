@@ -14,7 +14,7 @@ public class CreateOrder
 
     public DateTime? DeliveryTime { get; set; }
 
-    public string Address { get; set; }
+    public OrderAddressInfo Address { get; set; }
 
     public string Name { get; set; }
 

@@ -1,10 +1,8 @@
-﻿namespace Japaninja.Models.Addresses;
+﻿namespace Japaninja.Models.Order;
 
-public class CustomerAddressModel
+public class OrderAddressInfo
 {
-    public string Id { get; set; }
-
-    public string CustomerId { get; set; }
+    public string AddressId { get; set; }
 
     public string Street { get; set; }
 

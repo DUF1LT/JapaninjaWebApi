@@ -41,7 +41,7 @@ public class CouriersController : ControllerBase
 
     [Authorize(Policy = Policies.IsManager)]
     [HttpPost]
-    public async Task<ActionResult<string>> RegisterNewCourier(RegisterCourierUser registerCourier)
+    public async Task<ActionResult<string>> RegisterNewCourier([FromBody] RegisterCourierUser registerCourier)
     {
         var user = await _couriersService.GetCourierByEmailAsync(registerCourier.Email);
 
