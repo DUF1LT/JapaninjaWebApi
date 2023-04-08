@@ -9,6 +9,7 @@ using Japaninja.Repositories.Repositories.Cutlery;
 using Japaninja.Repositories.Repositories.Order;
 using Japaninja.Repositories.Repositories.Product;
 using Japaninja.Repositories.Repositories.Restaurant;
+using Japaninja.Repositories.Repositories.User.Couriers;
 using Japaninja.Repositories.Repositories.User.Customers;
 using Japaninja.Repositories.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -117,7 +118,8 @@ public class OrderService : IOrderService
             CustomerAddress = customerAddress,
             Status = OrderStatus.Processing,
             CustomerName = createOrder.Name,
-            CustomerPhoneNumber = createOrder.Phone
+            CustomerPhoneNumber = createOrder.Phone,
+            CreatedAt = DateTime.Now,
         };
 
         order.Products = _orderCreator.CreateFrom(order, createOrder.Products);
@@ -161,7 +163,7 @@ public class OrderService : IOrderService
 
         var orders = await orderRepository.GetFullIncludedQuery()
             .Where(p => p.Status == orderStatus)
-            .OrderByDescending(p => p.NumberId)
+            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
         return orders;
@@ -183,7 +185,7 @@ public class OrderService : IOrderService
             baseQuery = baseQuery.Where(p => p.Status != OrderStatus.Closed);
         }
 
-        var orders = await baseQuery.OrderByDescending(p => p.NumberId).ToListAsync();
+        var orders = await baseQuery.OrderByDescending(p => p.CreatedAt).ToListAsync();
 
         return orders;
     }
@@ -194,7 +196,7 @@ public class OrderService : IOrderService
 
         var orders = await orderRepository.GetFullIncludedQuery()
             .Where(p => p.Status == orderStatus && (p.CourierId == courierId || p.CustomerAddressId != null))
-            .OrderByDescending(p => p.NumberId)
+            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
         return orders;
@@ -233,8 +235,20 @@ public class OrderService : IOrderService
     public async Task ShipOrderAsync(string orderId, string courierId)
     {
         var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+        var couriersRepository = _unitOfWork.GetRepository<CourierUser, CouriersRepository>();
 
         var order = await orderRepository.GetByIdAsync(orderId);
+        var courier = await couriersRepository.GetCourierAsync(courierId);
+
+        var courierOrder = new CouriersOrders
+        {
+            Id = Guid.NewGuid().ToString(),
+            Courier = courier,
+            Order = order,
+        };
+
+        courier.Orders.Add(courierOrder);
+        couriersRepository.Update(courier);
 
         order.CourierId = courierId;
         order.Status = OrderStatus.Shipping;
@@ -250,6 +264,19 @@ public class OrderService : IOrderService
 
         order.Status = OrderStatus.Closed;
         order.DeliveryFactTime = DateTime.Now;
+
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task RateOrderAsync(string orderId, int rating, string feedback)
+    {
+        var orderRepository = _unitOfWork.GetRepository<DomainModel.Models.Order, OrderRepository>();
+
+        var order = await orderRepository.GetByIdAsync(orderId);
+
+        order.IsRated = true;
+        order.Rating = rating;
+        order.Feedback = feedback;
 
         await _unitOfWork.SaveChangesAsync();
     }

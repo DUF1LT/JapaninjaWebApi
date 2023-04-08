@@ -218,4 +218,26 @@ public class OrdersController : ControllerBase
 
         return Ok();
     }
+
+    [Authorize(Policy = Policies.IsCustomer)]
+    [HttpPut("{id}/rate")]
+    public async Task<ActionResult> RateOrder(string id, [FromBody] RateOrder rateOrder)
+    {
+        var courierId = User.GetUserId();
+
+        var order = await _orderService.GetOrderAsync(id);
+        if (order is null)
+        {
+            return NotFound();
+        }
+
+        if (order.Status != OrderStatus.Closed)
+        {
+            return BadRequest(ErrorResponse.CreateFromApiError(ApiError.OrderShouldBeClosed));
+        }
+
+        await _orderService.RateOrderAsync(id, rateOrder.Rating, rateOrder.Feedback);
+
+        return Ok();
+    }
 }

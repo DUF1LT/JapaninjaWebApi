@@ -4,6 +4,7 @@ using Japaninja.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Japaninja.Repositories.Migrations
 {
     [DbContext(typeof(JapaninjaDbContext))]
-    partial class JapaninjaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230408151904_AddIsRatedFlagAndRenameField")]
+    partial class AddIsRatedFlagAndRenameField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,9 +147,6 @@ namespace Japaninja.Repositories.Migrations
 
                     b.Property<string>("CourierId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerAddressId")
                         .HasColumnType("nvarchar(450)");

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Japaninja.DomainModel.Identity;
+﻿using Japaninja.DomainModel.Identity;
 using Japaninja.DomainModel.Models.Enums;
 using Japaninja.DomainModel.Models.Interfaces;
 
@@ -47,7 +46,11 @@ public class Order : IHasId
 
     public string Comment { get; set; }
 
+    public bool IsRated { get; set; }
+
     public int? Rating { get; set; }
 
-    public string DeliveryComment { get; set; }
+    public string Feedback { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 }

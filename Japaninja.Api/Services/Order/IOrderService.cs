@@ -26,4 +26,6 @@ public interface IOrderService
     Task ShipOrderAsync(string orderId, string courierId);
 
     Task CloseOrderAsync(string orderId);
+
+    Task RateOrderAsync(string orderId, int rating, string feedback);
 }

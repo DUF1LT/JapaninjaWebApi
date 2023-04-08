@@ -26,7 +26,10 @@ public class OrderCreator : IOrderCreator
             CourierId = order.CourierId,
             CustomerId = order.CustomerId,
             RestaurantId = order.RestaurantId,
-            CustomerAddressId = order.CustomerAddressId
+            CustomerAddressId = order.CustomerAddressId,
+            IsRated = order.IsRated,
+            Rating = order.Rating,
+            Feedback = order.Feedback,
         };
     }
 

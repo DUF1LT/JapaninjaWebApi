@@ -15,7 +15,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(p => p.NumberId).IsRequired().ValueGeneratedOnAdd();
         builder.Property(p => p.DeliveryFactTime).IsRequired(false);
         builder.Property(p => p.Rating);
-        builder.Property(p => p.DeliveryComment).IsRequired(false).HasMaxLength(Order.MaxCommentLength * 2);
+        builder.Property(p => p.Feedback).IsRequired(false).HasMaxLength(Order.MaxCommentLength * 2);
+        builder.Property(p => p.IsRated).HasDefaultValue(false);
 
         builder.HasOne(p => p.Customer)
             .WithMany()

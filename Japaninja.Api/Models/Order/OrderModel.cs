@@ -39,4 +39,12 @@ public class OrderModel
     public OrderStatus Status { get; set; }
 
     public string Comment { get; set; }
+
+    public bool IsRated { get; set; }
+
+    public int? Rating { get; set; }
+
+    public string Feedback { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 }
