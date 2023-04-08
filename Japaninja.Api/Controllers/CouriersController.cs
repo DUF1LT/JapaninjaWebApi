@@ -29,6 +29,17 @@ public class CouriersController : ControllerBase
         _courierUserCreator = courierUserCreator;
     }
 
+    [Authorize(Policy = Policies.IsCourierOrManager)]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CourierUserDetailsModel>> GetCourier(string id)
+    {
+        var courier = await _couriersService.GetCourierByIdAsync(id);
+        var courierOrdersInfo = await _couriersService.GetCourierOrdersInfoAsync(id);
+        var courierDetailsModel = _courierUserCreator.CreateFrom(courier, courierOrdersInfo.OrdersAmount, courierOrdersInfo.AverageRating);
+
+        return Ok(courierDetailsModel);
+    }
+
     [Authorize(Policy = Policies.IsManager)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<CourierUserModel>>> GetCouriers()
@@ -57,6 +68,26 @@ public class CouriersController : ControllerBase
         }
 
         return Ok(customerId);
+    }
+
+    [Authorize(Policy = Policies.IsCourierOrManager)]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<string>> EditCourier(string id, [FromBody] EditCourierUser editCourierUser)
+    {
+        var courierUser = await _couriersService.GetCourierByIdAsync(id);
+
+        if (courierUser is null)
+        {
+            return NotFound(ErrorResponse.CreateFromApiError(ApiError.UserDoesNotExist));
+        }
+
+        var isEditSuccessful = await _couriersService.EditCourierAsync(id, editCourierUser);
+        if (!isEditSuccessful)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
     }
 
     [Authorize(Policy = Policies.IsManager)]

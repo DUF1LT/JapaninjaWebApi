@@ -47,6 +47,13 @@ public class CouriersService : ICouriersService
         return await couriersRepository.GetByEmailAsync(email);
     }
 
+    public async Task<(int OrdersAmount, int AverageRating)> GetCourierOrdersInfoAsync(string id)
+    {
+        var couriersRepository = _unitOfWork.GetRepository<CourierUser, CouriersRepository>();
+
+        return await couriersRepository.GetCourierOrdersInfoAsync(id);
+    }
+
     public async Task<string> AddCourierAsync(RegisterCourierUser registerCourierUser)
     {
         var courierId = Guid.NewGuid().ToString();
@@ -71,6 +78,27 @@ public class CouriersService : ICouriersService
         await _unitOfWork.SaveChangesAsync();
 
         return courierId;
+    }
+
+    public async Task<bool> EditCourierAsync(string id, EditCourierUser editCourierUser)
+    {
+        var courier = await GetCourierByIdAsync(id);
+        if (courier is null)
+        {
+            LoggerContext.Current.LogError("Failed to edit courier with id {CourierId}", id);
+
+            return false;
+        }
+
+        courier.FullName = editCourierUser.Name;
+        courier.Image = editCourierUser.Image;
+        courier.PhoneNumber = editCourierUser.Phone;
+
+        var couriersRepository = _unitOfWork.GetRepository<CourierUser, CouriersRepository>();
+        couriersRepository.Update(courier);
+        await _unitOfWork.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<bool> DeleteCourierAsync(string id)

@@ -4,6 +4,7 @@ using Japaninja.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Japaninja.Repositories.Migrations
 {
     [DbContext(typeof(JapaninjaDbContext))]
-    partial class JapaninjaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230408094231_AddCourierImageAndOrderRating")]
+    partial class AddCourierImageAndOrderRating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -15,4 +15,18 @@ public class CourierUserCreator : ICourierUserCreator
             PhoneNumber = courierUser.PhoneNumber,
         };
     }
+
+    public CourierUserDetailsModel CreateFrom(CourierUser courierUser, int ordersAmount, int averageRating)
+    {
+        return new CourierUserDetailsModel
+        {
+            Id = courierUser.Id,
+            Email = courierUser.Email,
+            FullName = courierUser.FullName,
+            PhoneNumber = courierUser.PhoneNumber,
+            Image = courierUser.Image,
+            OrdersAmount = ordersAmount,
+            AverageRating = averageRating,
+        };
+    }
 }

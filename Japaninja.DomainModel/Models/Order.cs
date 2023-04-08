@@ -46,4 +46,8 @@ public class Order : IHasId
     public OrderStatus Status { get; set; }
 
     public string Comment { get; set; }
+
+    public int? Rating { get; set; }
+
+    public string DeliveryComment { get; set; }
 }

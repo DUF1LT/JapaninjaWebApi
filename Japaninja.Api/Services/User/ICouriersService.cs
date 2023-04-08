@@ -11,7 +11,11 @@ public interface ICouriersService
 
     Task<CourierUser> GetCourierByEmailAsync(string email);
 
+    Task<(int OrdersAmount, int AverageRating)> GetCourierOrdersInfoAsync(string id);
+
     Task<string> AddCourierAsync(RegisterCourierUser registerCourierUser);
+
+    Task<bool> EditCourierAsync(string id, EditCourierUser editCourierUser);
 
     Task<bool> DeleteCourierAsync(string id);
 }
