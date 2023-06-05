@@ -1,6 +1,7 @@
 ﻿using Japaninja.DomainModel.Models;
 using Japaninja.DomainModel.Models.Enums;
 using Japaninja.Models.Addresses;
+using Japaninja.Models.User;
 
 namespace Japaninja.Models.Order;
 
@@ -17,6 +18,8 @@ public class OrderModel
     public string CustomerPhoneNumber { get; set; }
 
     public string CourierId { get; set; }
+
+    public CourierUserModel Courier { get; set; }
 
     public string RestaurantId { get; set; }
 

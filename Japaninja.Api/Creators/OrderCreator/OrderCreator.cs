@@ -1,6 +1,7 @@
 ﻿using Japaninja.DomainModel.Models;
 using Japaninja.Models.Addresses;
 using Japaninja.Models.Order;
+using Japaninja.Models.User;
 
 namespace Japaninja.Creators.OrderCreator;
 
@@ -24,6 +25,16 @@ public class OrderCreator : IOrderCreator
             CustomerName = order.CustomerName,
             CustomerPhoneNumber = order.CustomerPhoneNumber,
             CourierId = order.CourierId,
+            Courier = order.CourierId is null
+                ? null
+                : new CourierUserModel
+            {
+                Id = order.Courier.Id,
+                FullName = order.Courier.FullName,
+                PhoneNumber = order.Courier.PhoneNumber,
+                Email = order.Courier.Email,
+                Image = order.Courier.Image,
+            },
             CustomerId = order.CustomerId,
             RestaurantId = order.RestaurantId,
             CustomerAddressId = order.CustomerAddressId,
